@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+	<PropertyGroup>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+		<Platforms>AnyCPU</Platforms>
+
+		<!-- NuGet（如需打包可开） -->
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<PackageId>UI.Controls.ImageViewport</PackageId>
+		<Authors>Leopold Quinn</Authors>
+		<Description>ImageViewport WPF custom control for .NET.</Description>
+	</PropertyGroup>
+
+	<!-- 主题资源：确保用 Page 编译 -->
+	<ItemGroup>
+		<Page Include="Themes\Generic.xaml" />
+	</ItemGroup>
+
+	<!-- 可选：包内带 README -->
+	<ItemGroup>
+		<None Include="README.md" Pack="true" PackagePath="" Condition="Exists('README.md')" />
+	</ItemGroup>
+</Project>

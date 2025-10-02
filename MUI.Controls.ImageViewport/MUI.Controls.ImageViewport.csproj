@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFramework>net8.0-windows</TargetFramework>
+      <Nullable>enable</Nullable>
+      <UseWPF>true</UseWPF>
+	  <Platforms>AnyCPU</Platforms>
+      <ImplicitUsings>enable</ImplicitUsings>
+	  <!-- 如需发包可开启 -->
+	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	  <PackageId>MUI.Controls.ImageViewport</PackageId>
+	  <Authors>MotseSoft</Authors>
+	  <Description>ImageViewport WPF custom control for .NET.</Description>
+  </PropertyGroup>
+
+</Project>
