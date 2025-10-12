@@ -1,0 +1,9 @@
+<Window x:Class="Samples.ImageViewport.DemoApp.MultiImageWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vp="clr-namespace:MUI.Controls.ImageViewport;assembly=MUI.Controls.ImageViewport"
+        Title="Multi-Image Scene" Width="1100" Height="720" Background="#181a1f">
+    <Grid Margin="8">
+        <vp:ImageViewport x:Name="vp" Background="#101215"/>
+    </Grid>
+</Window>

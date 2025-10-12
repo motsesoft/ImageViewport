@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>Samples.ImageViewport.DemoApp</AssemblyName>
+    <RootNamespace>Samples.ImageViewport.DemoApp</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\\MUI.Controls.ImageViewport\\MUI.Controls.ImageViewport.csproj" />
+    <ProjectReference Include="..\\MUI.Controls.ImageViewport.Handlers\\MUI.Controls.ImageViewport.Handlers.csproj" />
+    <ProjectReference Include="..\\MUI.Controls.ImageViewport.Surfaces\\MUI.Controls.ImageViewport.Surfaces.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\demo_checker.png"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\demo_checker.png"/>
+    <Resource Include="Assets\demo_checker_b.png"/>
+  </ItemGroup>
+</Project>
+

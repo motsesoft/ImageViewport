@@ -1,0 +1,14 @@
+<Application xmlns:local="clr-namespace:Samples.ImageViewport.DemoApp" x:Class="Samples.ImageViewport.DemoApp.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    
+<Application.Resources>
+    <local:EnumEqualsConverter x:Key="EnumEqualsConverter" />
+    <BitmapImage x:Key="DemoImage" UriSource="Assets/demo_checker.png"/>
+
+    <BitmapImage x:Key="DemoImageB" UriSource="Assets/demo_checker_b.png"/>
+</Application.Resources>
+
+
+</Application>

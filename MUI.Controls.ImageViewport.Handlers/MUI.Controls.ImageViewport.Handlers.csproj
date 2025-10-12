@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AssemblyName>MUI.Controls.ImageViewport.Handlers</AssemblyName>
+    <RootNamespace>MUI.Controls.ImageViewport.Handlers</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\\MUI.Controls.ImageViewport\\MUI.Controls.ImageViewport.csproj" />
+  </ItemGroup>
+</Project>

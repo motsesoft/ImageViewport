@@ -1,0 +1,93 @@
+<Window x:Class="Samples.ImageViewport.DemoApp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vp="clr-namespace:MUI.Controls.ImageViewport;assembly=MUI.Controls.ImageViewport"
+        xmlns:vm="clr-namespace:Samples.ImageViewport.DemoApp.ViewModels"
+        xmlns:surf="clr-namespace:MUI.Controls.ImageViewport.Surfaces;assembly=MUI.Controls.ImageViewport.Surfaces"
+        xmlns:ci="clr-namespace:MUI.Controls.ImageViewport.Contracts.Input;assembly=MUI.Controls.ImageViewport"
+        Title="ImageViewport Demo" Width="1100" Height="720" Background="#202428">
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_Scenario">
+                <MenuItem Header="Basic" Click="ScenarioBasic_Click"/>
+                <MenuItem Header="Drag with Wheel" Click="ScenarioWheel_Click"/>
+                <MenuItem Header="Precision Zoom (Ctrl+Wheel)" Click="ScenarioPrecision_Click"/>
+                <MenuItem Header="Box Zoom (Shift+Drag)" Click="ScenarioBoxZoom_Click"/>
+                <MenuItem Header="Measure Overlay" Click="ScenarioMeasure_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Commands">
+                <MenuItem Header="Fit To Window" Command="{Binding FitToWindowCommand}"/>
+                <MenuItem Header="Fit To Selection" Command="{Binding FitToSelectionCommand}"/>
+                <MenuItem Header="Reset View" Command="{Binding ResetViewCommand}"/>
+            </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Pan with _Left" Click="PanLeft_Click"/>
+                <MenuItem Header="Pan with _Middle" Click="PanMiddle_Click"/>
+                <MenuItem Header="Pan with _Right" Click="PanRight_Click"/>
+                <Separator/>
+                <MenuItem Header="Open _Image..." Click="OpenImage_Click"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="Open _Gallery" Click="OpenGallery_Click"/>
+                <Separator/>
+                <MenuItem Header="Show _Ruler" IsCheckable="True" IsChecked="{Binding Viewport.ShowRuler}"/>
+                <MenuItem Header="Show _HUD" IsCheckable="True" IsChecked="{Binding Viewport.ShowHud}"/>
+                <MenuItem Header="Show _Grid" IsCheckable="True" IsChecked="{Binding Viewport.ShowGrid}"/>
+                <MenuItem Header="Show _Crosshair" IsCheckable="True" IsChecked="{Binding Viewport.ShowCrosshair}"/>
+                <MenuItem Header="Show _Selection Overlay" IsCheckable="True" IsChecked="{Binding Viewport.ShowSelectionOverlay}"/>
+                <MenuItem Header="Show _Measurement Overlay" IsCheckable="True" IsChecked="{Binding Viewport.ShowMeasurementOverlay}"/>
+                        <MenuItem Header="Open _Multi-Image" Click="OpenMultiImage_Click"/>
+                            <Separator/>
+                <MenuItem Header="Ruler _Units">
+                    <MenuItem Header="_Pixels" IsCheckable="True" IsChecked="{Binding Viewport.RulerUnits, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static surf:RulerUnits.Pixels}}" Click="RulerUnitsPixels_Click"/>
+                    <MenuItem Header="_Millimeters" IsCheckable="True" IsChecked="{Binding Viewport.RulerUnits, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static surf:RulerUnits.Millimeters}}" Click="RulerUnitsMillimeters_Click"/>
+                    <MenuItem Header="_Inches" IsCheckable="True" IsChecked="{Binding Viewport.RulerUnits, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static surf:RulerUnits.Inches}}" Click="RulerUnitsInches_Click"/>
+                </MenuItem>
+                <MenuItem Header="Ruler Tick _Mode">
+                    <MenuItem Header="_Decimal" IsCheckable="True" IsChecked="{Binding Viewport.RulerTickMode, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static surf:TickMode.Decimal}}" Click="RulerModeDecimal_Click"/>
+                    <MenuItem Header="_Binary" IsCheckable="True" IsChecked="{Binding Viewport.RulerTickMode, Converter={StaticResource EnumEqualsConverter}, ConverterParameter={x:Static surf:TickMode.Binary}}" Click="RulerModeBinary_Click"/>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+
+<ToolBarTray Grid.Row="0" VerticalAlignment="Bottom">
+    <ToolBar>
+        <TextBlock Margin="4,0" VerticalAlignment="Center">Scale Factor:</TextBlock>
+        <Slider Width="160" Minimum="1.01" Maximum="2.0" SmallChange="0.01" LargeChange="0.1"
+                Value="{Binding Viewport.ScaleFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <TextBox Width="64" Margin="8,0,0,0" VerticalContentAlignment="Center"
+                 Text="{Binding Viewport.ScaleFactor, Mode=TwoWay, StringFormat=F2, UpdateSourceTrigger=PropertyChanged}"/>
+    </ToolBar>
+</ToolBarTray>
+
+
+        <Grid Margin="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                <TextBlock Text="ScaleFactor:" Foreground="#ccc" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBox Width="60" Text="{Binding Viewport.ScaleFactor, UpdateSourceTrigger=PropertyChanged}" />
+                <CheckBox Margin="16,0,0,0" Content="Ctrl+Wheel to Zoom" Foreground="#ccc" IsChecked="{Binding Viewport.RequireCtrlForWheelZoom}"/>
+                <TextBlock Text=" PanButton:" Foreground="#ccc" Margin="16,0,6,0" VerticalAlignment="Center"/>
+                <ComboBox Width="120" SelectedValue="{Binding Viewport.PanButton}">
+                    <ComboBoxItem Content="Left"/>
+                    <ComboBoxItem Content="Middle"/>
+                    <ComboBoxItem Content="Right"/>
+                </ComboBox>
+            </StackPanel>
+
+            <vp:ImageViewport x:Name="viewport" Grid.Row="1"
+                              Background="#101215"
+                              MinScale="{Binding Viewport.MinScale}"
+                              MaxScale="{Binding Viewport.MaxScale}"
+                              ScaleFactor="{Binding Viewport.ScaleFactor}"
+                              TargetScale="{Binding Viewport.TargetScale, Mode=TwoWay}"/>
+        </Grid>
+    </DockPanel>
+</Window>
