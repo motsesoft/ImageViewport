@@ -8,6 +8,6 @@
     <RootNamespace>MUI.Controls.ImageViewport.Surfaces</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\\MUI.Controls.ImageViewport\\MUI.Controls.ImageViewport.csproj" />
+    <ProjectReference Include="..\MUI.Controls.ImageViewport\MUI.Controls.ImageViewport.csproj" />
   </ItemGroup>
 </Project>

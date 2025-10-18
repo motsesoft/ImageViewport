@@ -6,6 +6,7 @@ namespace MUI.Controls.ImageViewport.Contracts.Abstractions.Events
         {
             DpiScaleX = x; DpiScaleY = y;
         }
+
         public double DpiScaleX { get; }
         public double DpiScaleY { get; }
     }

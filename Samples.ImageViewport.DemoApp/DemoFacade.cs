@@ -1,14 +1,18 @@
+using System.Windows;
+using System.Windows.Media;
+
+using ImageViewport.DemoApp.ViewModels;
+
+using MUI.Controls.ImageViewport.Contracts.Abstractions;
 using MUI.Controls.ImageViewport.Contracts.Facade;
 using MUI.Controls.ImageViewport.Contracts.Input;
 using MUI.Controls.ImageViewport.Contracts.Surfaces;
-using MUI.Controls.ImageViewport.Handlers;
-using MUI.Controls.ImageViewport.Surfaces;
-using System.Windows.Media;
-using MUI.Controls.ImageViewport.Contracts.Abstractions;
-using Samples.ImageViewport.DemoApp.ViewModels;
-using Samples.ImageViewport.DemoApp.Overlays;
+using MUI.Controls.ImageViewport.Handlers.Contracts;
+using MUI.Controls.ImageViewport.Handlers.Routers;
+using MUI.Controls.ImageViewport.Surfaces.Primitives;
+
 using Samples.ImageViewport.DemoApp.Adapters;
-using System.Windows;
+using Samples.ImageViewport.DemoApp.Overlays;
 
 namespace Samples.ImageViewport.DemoApp
 {
@@ -23,10 +27,9 @@ namespace Samples.ImageViewport.DemoApp
             ImageSource img = (ImageSource)(Application.Current.TryFindResource("DemoImage") ?? new DrawingImage());
             if (img is DrawingImage) // fallback to pack URI if resource missing
             {
-                try { img = new System.Windows.Media.Imaging.BitmapImage(new System.Uri("pack://application:,,,/Samples.ImageViewport.DemoApp;component/Assets/demo_checker.png")); }
-                catch { }
+                try { img = new System.Windows.Media.Imaging.BitmapImage(new System.Uri("pack://application:,,,/Samples.ImageViewport.DemoApp;component/Assets/demo_checker.png")); } catch { }
             }
-            var imageRenderer = new Overlays.ImageSurfaceRenderer { Source = img, ImageRectPx = new PxRect(0,0,0,0) };
+            var imageRenderer = new ImageSurfaceRenderer { Source = img, ImageRectPx = new PxRect(0, 0, 0, 0) };
 
             Renderer = new CompositeRenderer(new ISurfaceRenderer[]
             {
@@ -39,15 +42,14 @@ namespace Samples.ImageViewport.DemoApp
                 new ConditionalRenderer(new CrosshairSurfaceRenderer(), () => vm.ShowCrosshair)
             });
 
-            var panCfg = new VmPanZoomConfig(vm);
+            var panCfg = new PanZoomOptions();
             var selSink = new VmSelectionSink(vm, winToImgRect);
             InputRouter = new CompositeInputRouter(new IInputRouter[]
             {
                 new PanZoomHandler(panCfg),
-                new BoxSelectHandler(selSink, new BoxSelectOptions{ ActivationModifier = System.Windows.Input.ModifierKeys.Shift }),
                 new MouseTrackRouter(vm)
             });
-            ContextMenu = new DemoContextMenuProvider(new MainViewModel(){ /* simple menu VM */});
+            ContextMenu = new DemoContextMenuProvider(new MainViewModel() { /* simple menu VM */});
         }
     }
 
@@ -70,14 +72,14 @@ namespace Samples.ImageViewport.DemoApp
     public sealed class CompositeInputRouter : IInputRouter
     {
         private readonly IInputRouter[] _routers;
-        public CompositeInputRouter(IInputRouter[] routers){ _routers = routers; }
-        public bool OnLeftDown(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnLeftDown(sender,p) || h; return h; }
-        public bool OnLeftUp(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnLeftUp(sender,p) || h; return h; }
-        public bool OnRightDown(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnRightDown(sender,p) || h; return h; }
-        public bool OnRightUp(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnRightUp(sender,p) || h; return h; }
-        public bool OnMove(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnMove(sender,p) || h; return h; }
-        public bool OnWheel(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnWheel(sender,p) || h; return h; }
-        public bool OnMouseDown(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnMouseDown(sender,p) || h; return h; }
-        public bool OnMouseUp(object sender, PointerEvent p){ bool h=false; foreach(var r in _routers) h = r.OnMouseUp(sender,p) || h; return h; }
+        public CompositeInputRouter(IInputRouter[] routers) { _routers = routers; }
+        public bool OnLeftDown(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnLeftDown(sender, p) || h; return h; }
+        public bool OnLeftUp(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnLeftUp(sender, p) || h; return h; }
+        public bool OnRightDown(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnRightDown(sender, p) || h; return h; }
+        public bool OnRightUp(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnRightUp(sender, p) || h; return h; }
+        public bool OnMove(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnMove(sender, p) || h; return h; }
+        public bool OnWheel(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnWheel(sender, p) || h; return h; }
+        public bool OnMouseDown(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnMouseDown(sender, p) || h; return h; }
+        public bool OnMouseUp(object sender, PointerEvent p) { bool h = false; foreach (var r in _routers) h = r.OnMouseUp(sender, p) || h; return h; }
     }
 }

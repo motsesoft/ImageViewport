@@ -2,9 +2,10 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
+
 using MUI.Controls.ImageViewport.Contracts.Abstractions;
 using MUI.Controls.ImageViewport.Contracts.Surfaces;
-namespace MUI.Controls.ImageViewport.Surfaces
+namespace MUI.Controls.ImageViewport.Surfaces.Primitives
 {
     public enum RulerUnits { Pixels, Millimeters, Inches }
     public enum TickMode { Decimal, Binary }
@@ -12,47 +13,49 @@ namespace MUI.Controls.ImageViewport.Surfaces
     public sealed class RulerSurfaceRenderer : ISurfaceRenderer
     {
         public double ThicknessPx { get; set; } = 24;
-        public Brush  Background { get; set; } = new SolidColorBrush(Color.FromArgb(180, 24,24,24));
-        public Brush  Foreground { get; set; } = Brushes.White;
-        public Pen    TickPen    { get; } = new Pen(Brushes.White, 1);
+        public Brush Background { get; set; } = new SolidColorBrush(Color.FromArgb(180, 24, 24, 24));
+        public Brush Foreground { get; set; } = Brushes.White;
+        public Pen TickPen { get; } = new Pen(Brushes.White, 1);
 
         public RulerUnits Units { get; set; } = RulerUnits.Pixels;
-        public TickMode   Mode  { get; set; } = TickMode.Decimal;
+        public TickMode Mode { get; set; } = TickMode.Decimal;
 
-        public void Render(DrawingContext dc, Rect windowRect, ViewportInfo view, IViewportTransforms tf, object[] surfaces)
+        public SurfaceMode TransformMode => SurfaceMode.Independent;
+
+        public void Render(DrawingContext dc, in SurfaceRenderContext ctx)
         {
-            var topRect = new Rect(0, 0, windowRect.Width, ThicknessPx);
-            var leftRect = new Rect(0, 0, ThicknessPx, windowRect.Height);
+            var topRect = new Rect(0, 0, ctx.WindowRect.Width, ThicknessPx);
+            var leftRect = new Rect(0, 0, ThicknessPx, ctx.WindowRect.Height);
             dc.DrawRectangle(Background, null, topRect);
             dc.DrawRectangle(Background, null, leftRect);
 
             double pxPerUnit = Units switch
             {
                 RulerUnits.Pixels => 1.0,
-                RulerUnits.Millimeters => (view.DpiScaleX * 96.0) / 25.4, // 96 dpi * DpiScaleX per inch, 25.4 mm/in
-                RulerUnits.Inches => (view.DpiScaleX * 96.0),
+                RulerUnits.Millimeters => ctx.View.DpiScaleX * 96.0 / 25.4, // 96 dpi * DpiScaleX per inch, 25.4 mm/in
+                RulerUnits.Inches => ctx.View.DpiScaleX * 96.0,
                 _ => 1.0
             };
 
-            // é€‰æ‹©åˆé€‚çš„ä¸»åˆ»åº¦é—´éš”ï¼ˆå±å¹•ä¸Šçº¦æ¯ ~80px ä¸€ä¸ªä¸»åˆ»åº¦ï¼‰
+            // Ñ¡ÔñºÏÊÊµÄÖ÷¿Ì¶È¼ä¸ô£¨ÆÁÄ»ÉÏÔ¼Ã¿ ~80px Ò»¸öÖ÷¿Ì¶È£©
             double targetPx = 80.0;
             double[] steps = Mode == TickMode.Binary
-                ? new double[]{1,2,4,8,16,32,64,128,256,512,1024}
-                : new double[]{1,2,5,10,20,50,100,200,500,1000};
+                ? [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024]
+                : [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
             double majorUnits = steps[0];
             foreach (var s in steps)
             {
                 majorUnits = s;
-                if (s * pxPerUnit * view.Scale >= targetPx) break;
+                if (s * pxPerUnit * ctx.View.Scale >= targetPx) break;
             }
 
             double minorUnits = Mode == TickMode.Binary ? majorUnits / 4 : majorUnits / 10;
             if (minorUnits <= 0) minorUnits = majorUnits / 2;
 
-            // é¡¶éƒ¨åˆ»åº¦ï¼ˆXï¼‰
-            DrawAxis(dc, isHorizontal:true, windowRect, view, tf, pxPerUnit, majorUnits, minorUnits);
-            // å·¦ä¾§åˆ»åº¦ï¼ˆYï¼‰
-            DrawAxis(dc, isHorizontal:false, windowRect, view, tf, pxPerUnit, majorUnits, minorUnits);
+            // ¶¥²¿¿Ì¶È£¨X£©
+            DrawAxis(dc, isHorizontal: true, ctx.WindowRect, ctx.View, ctx.Transforms, pxPerUnit, majorUnits, minorUnits);
+            // ×ó²à¿Ì¶È£¨Y£©
+            DrawAxis(dc, isHorizontal: false, ctx.WindowRect, ctx.View, ctx.Transforms, pxPerUnit, majorUnits, minorUnits);
         }
 
         private void DrawAxis(DrawingContext dc, bool isHorizontal, Rect win, ViewportInfo view, IViewportTransforms tf,
@@ -61,7 +64,7 @@ namespace MUI.Controls.ImageViewport.Surfaces
             double length = isHorizontal ? win.Width : win.Height;
             double offset = ThicknessPx;
 
-            // å¯¹é½åˆ°å•ä½
+            // ¶ÔÆëµ½µ¥Î»
             PxPoint startPt = isHorizontal ? new PxPoint(offset, 0) : new PxPoint(0, offset);
             var startImg = tf.WindowToImage(startPt);
             double startUnits = isHorizontal ? startImg.X : startImg.Y;
@@ -75,8 +78,8 @@ namespace MUI.Controls.ImageViewport.Surfaces
                 if (pos > length) break;
                 if (pos < offset) continue;
 
-                bool isMajor = Math.Abs((u / majorUnits) - Math.Round(u / majorUnits)) < 1e-6;
-                double len = isMajor ? (ThicknessPx * 0.7) : (ThicknessPx * 0.4);
+                bool isMajor = Math.Abs(u / majorUnits - Math.Round(u / majorUnits)) < 1e-6;
+                double len = isMajor ? ThicknessPx * 0.7 : ThicknessPx * 0.4;
                 if (isHorizontal)
                     dc.DrawLine(TickPen, new Point(pos, ThicknessPx), new Point(pos, ThicknessPx - len));
                 else

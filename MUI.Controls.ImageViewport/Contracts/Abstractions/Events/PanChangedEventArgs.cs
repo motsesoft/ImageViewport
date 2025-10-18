@@ -6,6 +6,7 @@ namespace MUI.Controls.ImageViewport.Contracts.Abstractions.Events
         {
             NewTopLeftInImagePx = newTopLeft;
         }
+
         public PxPoint NewTopLeftInImagePx { get; }
     }
 }

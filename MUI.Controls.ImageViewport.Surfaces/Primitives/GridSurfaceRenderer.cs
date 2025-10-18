@@ -1,16 +1,18 @@
 using System.Windows;
 using System.Windows.Media;
-using MUI.Controls.ImageViewport.Contracts.Abstractions;
+
 using MUI.Controls.ImageViewport.Contracts.Surfaces;
 
-namespace MUI.Controls.ImageViewport.Surfaces
+namespace MUI.Controls.ImageViewport.Surfaces.Primitives
 {
     public sealed class GridSurfaceRenderer : ISurfaceRenderer
     {
         public double BaseMinorStepPx { get; set; } = 16;
         public int MajorEvery { get; set; } = 4;
-        public Brush MinorBrush { get; set; } = new SolidColorBrush(Color.FromArgb(60, 255,255,255));
-        public Brush MajorBrush { get; set; } = new SolidColorBrush(Color.FromArgb(110, 255,255,255));
+        public Brush MinorBrush { get; set; } = new SolidColorBrush(Color.FromArgb(60, 255, 255, 255));
+        public Brush MajorBrush { get; set; } = new SolidColorBrush(Color.FromArgb(110, 255, 255, 255));
+
+        public SurfaceMode TransformMode => SurfaceMode.Independent;
 
         private readonly Pen _minorPen;
         private readonly Pen _majorPen;
@@ -22,30 +24,30 @@ namespace MUI.Controls.ImageViewport.Surfaces
             if (_majorPen.CanFreeze) _majorPen.Freeze();
         }
 
-        public void Render(DrawingContext dc, Rect windowRect, ViewportInfo view, IViewportTransforms tf, object[] surfaces)
+        public void Render(DrawingContext dc, in SurfaceRenderContext ctx)
         {
             var step = BaseMinorStepPx;
             if (step <= 1) step = 1;
 
-            var left = windowRect.Left;
-            var top = windowRect.Top;
-            var right = windowRect.Right;
-            var bottom = windowRect.Bottom;
+            var left = ctx.WindowRect.Left;
+            var top = ctx.WindowRect.Top;
+            var right = ctx.WindowRect.Right;
+            var bottom = ctx.WindowRect.Bottom;
 
-            double startX = left - (left % step);
-            double startY = top - (top % step);
+            double startX = left - left % step;
+            double startY = top - top % step;
 
             int i = 0;
             for (double x = startX; x <= right; x += step, i++)
             {
-                var pen = (i % MajorEvery == 0) ? _majorPen : _minorPen;
+                var pen = i % MajorEvery == 0 ? _majorPen : _minorPen;
                 dc.DrawLine(pen, new Point(x, top), new Point(x, bottom));
             }
 
             i = 0;
             for (double y = startY; y <= bottom; y += step, i++)
             {
-                var pen = (i % MajorEvery == 0) ? _majorPen : _minorPen;
+                var pen = i % MajorEvery == 0 ? _majorPen : _minorPen;
                 dc.DrawLine(pen, new Point(left, y), new Point(right, y));
             }
         }

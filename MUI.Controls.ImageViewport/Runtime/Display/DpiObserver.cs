@@ -6,46 +6,78 @@ using MUI.Controls.ImageViewport.Contracts.Abstractions;
 
 namespace MUI.Controls.ImageViewport.Runtime.Display
 {
-    /// <summary>
-    /// DPI 观察器，用于监控和响应 DPI 变化事件。
-    /// 支持高 DPI 显示环境下的自适应缩放。
-    /// </summary>
     internal static class DpiObserver
     {
-        /// <summary>
-        /// 将 DPI 观察器附加到指定的视觉元素和视口服务。
-        /// </summary>
-        /// <param name="visual">要监控的视觉元素。</param>
-        /// <param name="service">视口服务实例。</param>
-        public static void Attach(Visual visual, IViewportService service)
+        public static IDisposable? Attach(Visual visual, IViewportService service)
         {
-            if (visual == null) return;
-
+            if (visual == null) return null;
             try
             {
-                // 获取当前 DPI 设置
                 var dpi = VisualTreeHelper.GetDpi(visual);
                 service.SetDpi(dpi.DpiScaleX, dpi.DpiScaleY);
 
-                // 尝试监听 DPI 变化事件
                 var src = PresentationSource.FromVisual(visual);
-                if (src is HwndSource hwnd && hwnd.CompositionTarget is HwndTarget target)
+                if (src is HwndSource hwnd)
                 {
-                    // DpiChanged 事件在较新的 WPF 版本中可用；如果不存在则静默回退
-                    var evt = target.GetType().GetEvent("DpiChanged");
+                    // DpiChanged is available on newer WPF; fall back silently if not present.
+                    var evt = hwnd.GetType().GetEvent("DpiChanged");
                     if (evt != null)
                     {
-                        EventHandler handler = (s, e) =>
+                        HwndDpiChangedEventHandler handler = (s, e) =>
                         {
-                            var d = VisualTreeHelper.GetDpi(visual);
-                            service.SetDpi(d.DpiScaleX, d.DpiScaleY);
+                            if (visual.Dispatcher.CheckAccess())
+                            {
+                                var d = VisualTreeHelper.GetDpi(visual);
+                                service.SetDpi(d.DpiScaleX, d.DpiScaleY);
+                            } else
+                            {
+                                visual.Dispatcher.Invoke(() =>
+                                {
+                                    var d = VisualTreeHelper.GetDpi(visual);
+                                    service.SetDpi(d.DpiScaleX, d.DpiScaleY);
+                                });
+                            }
                         };
-                        evt.AddEventHandler(target, handler);
+
+                        evt.AddEventHandler(hwnd, handler);
+
+                        return new DpiSubscription(hwnd, evt, handler);
                     }
                 }
             } catch
             {
-                // 最大努力原则；如果环境不支持 DPI 查询则忽略
+                // Best-effort; ignore if environment does not support DPI query
+            }
+
+            return null;
+        }
+
+        sealed class DpiSubscription : IDisposable
+        {
+            readonly HwndSource _source;
+            readonly System.Reflection.EventInfo _event;
+            readonly HwndDpiChangedEventHandler _handler;
+            bool _disposed;
+
+            public DpiSubscription(HwndSource source, System.Reflection.EventInfo evt, HwndDpiChangedEventHandler handler)
+            {
+                _source = source;
+                _event = evt;
+                _handler = handler;
+            }
+
+            public void Dispose()
+            {
+                if (_disposed) return;
+                _disposed = true;
+
+                try
+                {
+                    _event.RemoveEventHandler(_source, _handler);
+                } catch
+                {
+                    // 已释放的对象，忽略
+                }
             }
         }
     }

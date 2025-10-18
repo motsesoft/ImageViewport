@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\demo_checker.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\demo_checker.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MUI.Controls.ImageViewport\MUI.Controls.ImageViewport.csproj" />
+    <ProjectReference Include="..\MUI.Controls.ImageViewport.Handlers\MUI.Controls.ImageViewport.Handlers.csproj" />
+    <ProjectReference Include="..\MUI.Controls.ImageViewport.Surfaces\MUI.Controls.ImageViewport.Surfaces.csproj" />
+    <ProjectReference Include="..\MUI.Controls.ImageViewport.Facade\MUI.Controls.ImageViewport.Facade.csproj" />
+  </ItemGroup>
+
+</Project>

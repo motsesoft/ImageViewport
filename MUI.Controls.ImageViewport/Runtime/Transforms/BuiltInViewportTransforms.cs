@@ -6,7 +6,7 @@ namespace MUI.Controls.ImageViewport.Runtime.Transforms
     /// 内置视口坐标变换实现。
     /// 提供窗口像素坐标与图像像素坐标之间的双向转换功能。
     /// </summary>
-    internal sealed class BuiltInViewportTransforms : IViewportTransforms
+    public sealed class BuiltInViewportTransforms : IViewportTransforms
     {
         private readonly ViewportInfo _viewportInfo;
 

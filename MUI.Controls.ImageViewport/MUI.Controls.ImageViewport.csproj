@@ -13,4 +13,8 @@
 	  <Description>ImageViewport WPF custom control for .NET.</Description>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="Contracts\Transforms\" />
+  </ItemGroup>
+
 </Project>

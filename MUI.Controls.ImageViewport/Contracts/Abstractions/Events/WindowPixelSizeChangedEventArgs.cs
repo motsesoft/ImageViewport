@@ -6,6 +6,7 @@ namespace MUI.Controls.ImageViewport.Contracts.Abstractions.Events
         {
             NewSize = newSize;
         }
+
         public PxSize NewSize { get; }
     }
 }
